@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class TipeKamarModel extends Model
+{
+    protected $table = 'tb_tipe_kamar';
+    protected $primaryKey = 'id_tipe';
+    
+    protected $allowedFields = ['id_kos', 'nama_tipe', 'harga_dasar', 'fasilitas', 'deskripsi', 'foto_1', 'foto_2', 'foto_3'];
+    
+    protected $useTimestamps = true;
+    protected $useSoftDeletes = true;
+    protected $deletedField  = 'deleted_at';
+}

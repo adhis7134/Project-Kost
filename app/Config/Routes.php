@@ -1,0 +1,110 @@
+<?php
+
+use CodeIgniter\Router\RouteCollection;
+
+/**
+ * @var RouteCollection $routes
+ */
+// Platform Multi-Tenant (Katalog Kos & Detail Kos)
+$routes->get('/', 'PlatformController::index');
+$routes->get('kos/(:segment)', 'PlatformController::show/$1');
+$routes->get('daftar-pemilik', 'PlatformController::registerPemilik');
+$routes->post('daftar-pemilik/simpan', 'PlatformController::storePemilik');
+
+// Auth & Legacy
+$routes->get('login', 'Auth::index');
+$routes->post('login/process', 'Auth::process');
+$routes->get('logout', 'Auth::logout');
+$routes->post('/ganti-password/process', 'Auth::processGantiPassword', ['filter' => 'penghuni']);
+
+$routes->get('kamar', 'Home::daftarKamar');
+$routes->get('home/daftarkamar', 'Home::daftarKamar');
+
+$routes->post('booking/submit', 'Home::submitBooking');
+$routes->post('submitBooking', 'Home::submitBooking');
+
+$routes->get('track/(:num)', 'Home::track/$1');
+$routes->get('pay-dp/(:num)', 'Home::payDP/$1');
+$routes->get('home/successDP/(:num)', 'Home::successDP/$1');
+
+$routes->post('webhook/midtrans', 'WebhookController::index');
+
+//middleware
+$routes->group('admin', ['filter' => 'admin'], static function ($routes) 
+{
+
+    $routes->get('booking', 'AdminBookingController::index');
+    $routes->get('booking/approve/(:num)', 'AdminBookingController::approve/$1');
+    $routes->get('booking/create-account/(:num)', 'AdminBookingController::createAccount/$1');
+    $routes->get('booking/delete/(:num)', 'AdminBookingController::delete/$1');
+    $routes->get('booking/clear-cancelled', 'AdminBookingController::clearCancelled');
+
+    $routes->get('laporan', 'AdminLaporanController::index');
+    $routes->get('laporan/export', 'AdminLaporanController::exportExcel');
+
+    $routes->get('dashboard', 'AdminController::index');
+    $routes->get('tipe-kamar', 'TipeKamarController::index');
+    $routes->get('tipe-kamar/create', 'TipeKamarController::create');
+    $routes->post('tipe-kamar/store', 'TipeKamarController::store');
+    $routes->get('tipe-kamar/edit/(:num)', 'TipeKamarController::edit/$1');
+    $routes->post('tipe-kamar/update/(:num)', 'TipeKamarController::update/$1');
+    $routes->get('tipe-kamar/delete/(:num)', 'TipeKamarController::delete/$1');
+
+    $routes->get('kamar', 'KamarController::index');
+    $routes->get('kamar/create', 'KamarController::create');
+    $routes->post('kamar/store', 'KamarController::store');
+    $routes->get('kamar/edit/(:num)', 'KamarController::edit/$1');
+    $routes->post('kamar/update/(:num)', 'KamarController::update/$1');
+    $routes->get('kamar/delete/(:num)', 'KamarController::delete/$1');
+
+    $routes->get('penghuni', 'AdminPenghuniController::index');
+    $routes->get('penghuni/create', 'AdminPenghuniController::create');
+    $routes->post('penghuni/store', 'AdminPenghuniController::store');
+    $routes->get('penghuni/delete/(:num)', 'AdminPenghuniController::delete/$1');
+
+    $routes->get('tagihan', 'AdminTagihanController::index');
+    $routes->get('tagihan/create', 'AdminTagihanController::create');
+    $routes->post('tagihan/store', 'AdminTagihanController::store');
+    $routes->get('tagihan/lunasi/(:num)', 'AdminTagihanController::lunasi/$1');
+    $routes->post('tagihan/bulk-generate', 'AdminTagihanController::bulkGenerate');
+
+    $routes->get('komplain', 'AdminKomplainController::index');
+    $routes->post('komplain/update/(:num)', 'AdminKomplainController::updateStatus/$1');
+
+    $routes->get('pembayaran', 'AdminPembayaranController::index');
+
+    $routes->get('profil', 'AdminProfilController::index');
+    $routes->post('profil/update', 'AdminProfilController::update');
+
+    $routes->get('kelola-admin', 'AdminProfilController::listAdmin');
+    $routes->get('kelola-admin/create', 'AdminProfilController::create');
+    $routes->post('kelola-admin/store', 'AdminProfilController::store');
+    $routes->get('kelola-admin/delete/(:num)', 'AdminProfilController::delete/$1');
+
+    $routes->get('tagihan/hapus/(:num)', 'AdminTagihanController::hapus/$1');
+});
+
+$routes->group('penghuni', ['filter' => 'penghuni'], static function ($routes) 
+{
+    $routes->get('dashboard', 'PenghuniController::index');
+
+    $routes->get('tagihan', 'PenghuniTagihanController::index');
+    $routes->get('komplain', 'PenghuniKomplainController::index');
+    $routes->get('komplain/create', 'PenghuniKomplainController::create');
+    $routes->post('komplain/store', 'PenghuniKomplainController::store');
+
+    $routes->get('pembayaran', 'PenghuniPembayaranController::index');
+    $routes->post('pembayaran/checkout', 'PenghuniPembayaranController::checkout');
+    $routes->get('pembayaran/invoice/(:segment)', 'PenghuniPembayaranController::invoice/$1');
+    $routes->get('pembayaran/simulate/(:segment)', 'PenghuniPembayaranController::simulatePay/$1');
+    $routes->get('pembayaran/success/(:num)', 'PenghuniPembayaranController::successPay/$1');
+
+    $routes->get('profil', 'PenghuniProfilController::index');
+    $routes->post('profil/update', 'PenghuniProfilController::update');
+
+    $routes->post('pembayaran/checkout', 'PenghuniPembayaranController::checkout');
+});
+
+$routes->get('/ganti-password', 'Auth::gantiPassword', ['filter' => 'penghuni']);
+$routes->get('/onboarding', 'Auth::onboarding', ['filter' => 'penghuni']);
+$routes->post('/onboarding/submit', 'Auth::onboardingSubmit', ['filter' => 'penghuni']);
